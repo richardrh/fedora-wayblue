@@ -1,0 +1,91 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-list-v1.json
+
+modules:
+  - type: dnf
+
+    repos:
+      cleanup: true
+
+      copr:
+        # Ghostty's Fedora package
+        - scottames/ghostty
+
+        # mise
+        - jdxcode/mise
+
+      files:
+        # Tailscale official Fedora repository
+        - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+
+    install:
+      packages:
+        # --------------------------------------------------
+        # Terminal / editors
+        # --------------------------------------------------
+        - ghostty
+        - emacs-pgtk
+
+        # --------------------------------------------------
+        # Development foundation
+        # --------------------------------------------------
+        - gcc
+        - gcc-c++
+        - clang
+        - llvm
+        - lld
+        - make
+        - cmake
+        - ninja-build
+        - pkgconf-pkg-config
+
+        # --------------------------------------------------
+        # Core tools
+        # --------------------------------------------------
+        - git
+        - sqlite
+        - mise
+
+        # --------------------------------------------------
+        # Containers
+        # --------------------------------------------------
+        - podman
+        - podman-docker
+        - distrobox
+
+        # --------------------------------------------------
+        # Networking / remote access
+        # --------------------------------------------------
+        - openssh-server
+        - tailscale
+
+        # --------------------------------------------------
+        # Backup / recovery
+        # --------------------------------------------------
+        - restic
+
+        # --------------------------------------------------
+        # Everyday CLI
+        # --------------------------------------------------
+        - jq
+        - ripgrep
+        - fd-find
+        - fzf
+        - bat
+        - tree
+        - rsync
+        - unzip
+        - btop
+
+        # --------------------------------------------------
+        # Homelab / troubleshooting
+        # --------------------------------------------------
+        - bind-utils
+        - tcpdump
+        - nmap
+        - iperf3
+        - lsof
+        - strace
+        - ethtool
+        - smartmontools
+        - nvme-cli

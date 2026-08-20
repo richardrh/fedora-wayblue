@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+
+name: my-sway
+description: My Fedora Atomic Sway workstation
+
+base-image: ghcr.io/wayblueorg/sway
+image-version: latest
+
+modules:
+  - from-file: common-packages.yml
+  - from-file: flatpaks.yml
+  - from-file: fonts.yml
+
+  # Enable Tailscale daemon.
+  # Authentication is deliberately NOT stored in the image.
+  - type: systemd
+    system:
+      enabled:
+        - tailscaled.service
+
+  # Keep this last.
+  - type: signing

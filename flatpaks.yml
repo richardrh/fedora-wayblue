@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-v1.json
+
+type: default-flatpaks
+
+configurations:
+  - scope: user
+    notify: false
+
+    repo:
+      title: Flathub
+
+    install:
+      - app.zen_browser.zen
+      - org.chromium.Chromium
+      - com.bitwarden.desktop
