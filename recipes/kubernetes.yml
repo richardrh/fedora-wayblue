@@ -10,5 +10,6 @@ modules:
           INSTALL_K3S_SKIP_ENABLE=true \
           INSTALL_K3S_BIN_DIR=/usr/bin \
           INSTALL_K3S_SYSTEMD_DIR=/usr/lib/systemd/system \
+          INSTALL_K3S_SELINUX_WARN=true \
           INSTALL_K3S_EXEC="server" \
           sh -
