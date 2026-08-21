@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-list-v1.json
+
+modules:
+  - type: script
+    snippets:
+      - |
+        curl -sfL https://get.k3s.io | \
+          INSTALL_K3S_SKIP_START=true \
+          INSTALL_K3S_SKIP_ENABLE=true \
+          INSTALL_K3S_BIN_DIR=/usr/bin \
+          INSTALL_K3S_SYSTEMD_DIR=/usr/lib/systemd/system \
+          INSTALL_K3S_EXEC="server" \
+          sh -
