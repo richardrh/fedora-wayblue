@@ -50,6 +50,7 @@ modules:
         # Containers
         # --------------------------------------------------
         - podman
+        - container-selinux
         - podman-docker
         - distrobox
 
