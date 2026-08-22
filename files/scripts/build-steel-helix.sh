@@ -10,6 +10,10 @@ rm -rf /var/lib/apt/lists/*
 git clone --filter=blob:none https://github.com/mattwparas/helix.git /src/helix
 git -C /src/helix checkout "$HELIX_COMMIT"
 cd /src/helix
+export CARGO_BUILD_JOBS="$(nproc)"
+export CARGO_PROFILE_RELEASE_LTO=off
+export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=16
+export CARGO_INCREMENTAL=0
 cargo xtask steel
 
 install -d /out/bin /out/lib64/helix
