@@ -14,6 +14,6 @@ cargo xtask steel
 
 install -d /out/bin /out/lib64/helix
 for binary in hx steel forge steel-language-server; do
-  install -m 0755 "/root/.cargo/bin/$binary" "/out/bin/$binary"
+  install -m 0755 "/usr/local/cargo/bin/$binary" "/out/bin/$binary"
 done
 cp -a runtime/. /out/lib64/helix/runtime/
