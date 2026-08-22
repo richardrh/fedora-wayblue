@@ -1,11 +1,19 @@
 ---
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 
-name: fedora-wayblue
-description: Fedora Wayblue Sway workstation
+name: fedora-sway
+description: Fedora Sway Atomic developer workstation
 
-base-image: ghcr.io/wayblueorg/sway
-image-version: latest
+base-image: quay.io/fedora-ostree-desktops/sway-atomic
+image-version: "44"
+
+stages:
+  - name: steel-helix
+    from: docker.io/library/rust:1.90-bookworm
+    modules:
+      - type: script
+        scripts:
+          - build-steel-helix.sh
 
 modules:
   - from-file: common-packages.yml
@@ -13,10 +21,27 @@ modules:
   - from-file: flatpaks.yml
   - from-file: fonts.yml
 
+  - type: copy
+    from: steel-helix
+    src: /out/
+    dest: /usr/
+
+  - type: files
+    files:
+      - source: system
+        destination: /
+
+  - type: script
+    scripts:
+      - install-upstream-tools.sh
+
   - type: systemd
     system:
       enabled:
         - tailscaled.service
         - k3s.service
+    user:
+      enabled:
+        - podman.socket
 
   - type: signing

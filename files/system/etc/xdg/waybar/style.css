@@ -1,0 +1,77 @@
+@define-color base #1e1e2e;
+@define-color mantle #181825;
+@define-color surface0 #313244;
+@define-color surface1 #45475a;
+@define-color text #cdd6f4;
+@define-color subtext0 #a6adc8;
+@define-color mauve #cba6f7;
+@define-color blue #89b4fa;
+@define-color red #f38ba8;
+@define-color yellow #f9e2af;
+
+* {
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font";
+  font-size: 10pt;
+}
+
+window#waybar {
+  background: @base;
+  color: @text;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  padding: 4px 6px;
+}
+
+#workspaces button,
+#mode,
+#window,
+#clock,
+#battery,
+#cpu,
+#memory,
+#temperature,
+#network,
+#pulseaudio,
+#backlight,
+#tray,
+#idle_inhibitor {
+  color: @text;
+  background: @surface0;
+  border-radius: 6px;
+  margin: 2px 3px;
+  padding: 2px 9px;
+}
+
+#workspaces button {
+  color: @subtext0;
+  padding: 2px 7px;
+}
+
+#workspaces button.focused,
+#workspaces button.active {
+  color: @base;
+  background: @mauve;
+}
+
+#workspaces button.urgent,
+#battery.critical {
+  color: @base;
+  background: @red;
+}
+
+#network { color: @blue; }
+#battery { color: @yellow; }
+#pulseaudio { color: @mauve; }
+
+tooltip {
+  color: @text;
+  background: @mantle;
+  border: 1px solid @surface1;
+  border-radius: 6px;
+}

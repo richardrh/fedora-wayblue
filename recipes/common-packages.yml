@@ -3,32 +3,26 @@
 
 modules:
   - type: dnf
-
     repos:
       cleanup: true
-
       copr:
-        # Ghostty's Fedora package
         - scottames/ghostty
-
-        # mise
         - jdxcode/mise
-
       files:
-        # Tailscale official Fedora repository
         - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+        - https://packages.adoptium.net/artifactory/rpm/fedora/adoptium.repo
 
     install:
       packages:
-        # --------------------------------------------------
-        # Terminal / editors
-        # --------------------------------------------------
+        # Desktop applications and integration
         - ghostty
         - emacs-pgtk
+        - thunar
+        - thunar-archive-plugin
+        - file-roller
+        - rofi-themes
 
-        # --------------------------------------------------
-        # Development foundation
-        # --------------------------------------------------
+        # C/C++, Rust, Go, Python, JavaScript, Java, and .NET
         - gcc
         - gcc-c++
         - clang
@@ -38,55 +32,67 @@ modules:
         - cmake
         - ninja-build
         - pkgconf-pkg-config
+        - rust
+        - cargo
+        - rust-analyzer
+        - clippy
+        - golang
+        - python3
+        - python3-devel
+        - python-unversioned-command
+        - uv
+        - nodejs
+        - npm
+        - temurin-25-jdk
+        - dotnet-sdk-10.0
 
-        # --------------------------------------------------
-        # Core tools
-        # --------------------------------------------------
+        # Editors, shells, Git, and dotfile support
+        - neovim
+        - tmux
         - git
-        - sqlite
-        - mise
-
-        # --------------------------------------------------
-        # Containers
-        # --------------------------------------------------
-        - podman
-        - container-selinux
-        - podman-docker
-        - distrobox
-
-        # --------------------------------------------------
-        # Networking / remote access
-        # --------------------------------------------------
-        - openssh-server
-        - tailscale
-
-        # --------------------------------------------------
-        # Backup / recovery
-        # --------------------------------------------------
-        - restic
-
-        # --------------------------------------------------
-        # Everyday CLI
-        # --------------------------------------------------
+        - gh
+        - glab
         - jq
+        - yq
+        - fzf
         - ripgrep
         - fd-find
-        - fzf
+        - eza
         - bat
+        - zoxide
+        - git-delta
+        - hyperfine
         - tree
         - rsync
+        - zip
         - unzip
+        - wget
+        - curl
+        - less
+        - file
+        - ShellCheck
+        - shfmt
         - btop
-
-        # --------------------------------------------------
-        # Homelab / troubleshooting
-        # --------------------------------------------------
-        - bind-utils
-        - tcpdump
-        - nmap
-        - iperf3
         - lsof
         - strace
-        - ethtool
-        - smartmontools
-        - nvme-cli
+        - vifm
+        - stow
+        - mise
+
+        # Containers and Fedora-packaged Kubernetes clients
+        - podman
+        - podman-docker
+        - container-selinux
+        - distrobox
+        - helm3
+        - kustomize
+        - k9s
+
+        # Networking, remote access, backup, and secrets
+        - openssh-server
+        - tailscale
+        - restic
+        - age
+        - policycoreutils
+        - selinux-policy
+        - selinux-policy-base

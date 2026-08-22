@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+# k3d speaks Docker API; point it at the independently managed Podman user socket.
+: "${DOCKER_HOST:=unix:///run/user/$(id -u)/podman/podman.sock}"
+export DOCKER_HOST
+exec /usr/libexec/k3d "$@"

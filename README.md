@@ -1,43 +1,55 @@
-# BlueBuild Template &nbsp; [![bluebuild build badge](https://github.com/blue-build/template/actions/workflows/build.yml/badge.svg)](https://github.com/blue-build/template/actions/workflows/build.yml)
+# Fedora Sway Atomic developer workstation
 
-See the [BlueBuild docs](https://blue-build.org/how-to/setup/) for quick setup instructions for setting up your own repository based on this template.
+[![bluebuild](https://github.com/richardrh/fedora-wayblue/actions/workflows/build.yml/badge.svg)](https://github.com/richardrh/fedora-wayblue/actions/workflows/build.yml)
 
-After setup, it is recommended you update this README to describe your custom image.
+A signed BlueBuild image based on Fedora 44 Sway Atomic. It retains Fedora's Sway, Waybar, Rofi, notification, and keybinding defaults while adding 2x output scaling, light Catppuccin Mocha styling, development toolchains, Podman/Kubernetes tooling, and workstation applications.
 
-## Installation
+Published image:
 
-> [!WARNING]  
-> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable), try at your own discretion.
+```text
+ghcr.io/richardrh/fedora-sway:latest
+```
 
-To rebase an existing atomic Fedora installation to the latest build:
+## Install or rebase
 
-- First rebase to the unsigned image, to get the proper signing keys and policies installed:
-  ```
-  rpm-ostree rebase ostree-unverified-registry:ghcr.io/blue-build/template:latest
-  ```
-- Reboot to complete the rebase:
-  ```
-  systemctl reboot
-  ```
-- Then rebase to the signed image, like so:
-  ```
-  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/blue-build/template:latest
-  ```
-- Reboot again to complete the installation
-  ```
-  systemctl reboot
-  ```
-
-The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.
-
-## ISO
-
-If build on Fedora Atomic, you can generate an offline ISO with the instructions available [here](https://blue-build.org/how-to/generate-iso/#_top). These ISOs cannot unfortunately be distributed on GitHub for free due to large sizes, so for public projects something else has to be used for hosting.
-
-## Verification
-
-These images are signed with [Sigstore](https://www.sigstore.dev/)'s [cosign](https://github.com/sigstore/cosign). You can verify the signature by downloading the `cosign.pub` file from this repo and running the following command:
+Rebase once to the unsigned transport so the image's signing policy and public key are deployed:
 
 ```bash
-cosign verify --key cosign.pub ghcr.io/blue-build/template
+sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/richardrh/fedora-sway:latest
+sudo systemctl reboot
 ```
+
+After reboot, move to the signature-enforced image and reboot again:
+
+```bash
+sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/richardrh/fedora-sway:latest
+sudo systemctl reboot
+```
+
+Verify a published image independently with the repository public key:
+
+```bash
+cosign verify --key cosign.pub ghcr.io/richardrh/fedora-sway
+```
+
+## User state and dotfiles
+
+Personal configuration is intentionally not baked into the image. GNU Stow is installed for a separate dotfiles repository:
+
+```bash
+git clone git@github.com:richardrh/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+stow bash nvim doom ghostty helix git
+```
+
+Native PGTK Emacs is included. `bootstrap-doom-emacs` clones Doom into `~/.config/emacs` without touching `~/.config/doom`; run Doom's installer after stowing the user's Doom configuration.
+
+`mise` is installed only for repository-local version overrides. Baseline languages and commands are available without `mise install`.
+
+## Runtime notes
+
+- `k3s` is pinned, runs as a native system service with its own containerd, and uses Rancher's SELinux policy package.
+- Podman remains independent. Its user socket is enabled; the `k3d` wrapper points Docker-API calls at that socket and never falls back to Docker Engine.
+- Steel Helix is built from Matthew Paras's pinned `steel-event-system` commit in an isolated BlueBuild stage. Only `hx`, `steel`, `forge`, `steel-language-server`, and the Helix runtime are copied into the final image.
+- Tailscale is enabled but unconfigured. Each machine must run `sudo tailscale up` itself.
+- Builds run on every push to `main`, on manual dispatch, and daily. The signing module remains last and uses the existing `SIGNING_SECRET`; no private key is stored here.

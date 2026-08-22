@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -e "$HOME/.config/emacs" ]]; then
+  echo "$HOME/.config/emacs already exists; refusing to overwrite it" >&2
+  exit 1
+fi
+
+git clone --depth 1 https://github.com/doomemacs/doomemacs "$HOME/.config/emacs"
+printf 'Doom Emacs installed. Run %q to initialize it after placing your ~/.config/doom files.\n' \
+  "$HOME/.config/emacs/bin/doom install"
