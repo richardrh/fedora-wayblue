@@ -10,7 +10,7 @@ modules:
         - jdxcode/mise
       files:
         - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
-        - https://packages.adoptium.net/artifactory/rpm/fedora/adoptium.repo
+        - adoptium.repo
 
     install:
       packages:
