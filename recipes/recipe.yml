@@ -21,7 +21,7 @@ modules:
   - from-file: flatpaks.yml
   - from-file: fonts.yml
 
-  # Steel-enabled Helix built in a separate build stage.
+  # Steel-enabled Helix and matching Steel release binaries.
   - type: copy
     from: steel-helix
     src: /out/

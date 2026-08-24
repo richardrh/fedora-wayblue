@@ -48,7 +48,7 @@ Use `mise` from the dotfiles repository for Go, Rust, Python, Node, Java, and ot
 
 - `k3s` is pinned, runs as a native system service with its own containerd, and uses Rancher's SELinux policy package.
 - Podman remains independent. Its user socket is enabled; the `k3d` wrapper points Docker-API calls at that socket and never falls back to Docker Engine.
-- Steel Helix is built from Matthew Paras's pinned `steel-event-system` commit in an isolated BlueBuild stage. Only `hx`, `steel`, `forge`, `steel-language-server`, and the Helix runtime are copied into the final image.
+- Steel Helix is built from the pinned `steel-event-system` commit compatible with Steel 0.8.2. Checksum-pinned Steel, Forge, and language-server release binaries avoid rebuilding those tools; only `hx` is compiled in the isolated BlueBuild stage.
 - Chezmoi initializes and updates each user's dotfiles through systemd user units; no separate image bootstrap script is used.
 - Tailscale is enabled but unconfigured. Each machine must run `sudo tailscale up` itself.
 - Builds run on every push to `main`, on manual dispatch, and daily. The signing module remains last and uses the existing `SIGNING_SECRET`; no private key is stored here.
