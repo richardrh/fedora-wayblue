@@ -28,7 +28,8 @@ case "$(uname -m)" in
 esac
 
 install_release() {
-  local package=$1 binary=$2 checksum=$3 archive="/tmp/${package}.tar.xz"
+  local package=$1 binary=$2 checksum=$3
+  local archive="/tmp/${package}.tar.xz"
   local url="https://github.com/mattwparas/steel/releases/download/v${STEEL_VERSION}/${package}-${target}.tar.xz"
 
   curl --fail --location --retry 3 --output "$archive" "$url"
