@@ -45,6 +45,8 @@ install_release steel-language-server steel-language-server "$lsp_sha256"
 git clone --filter=blob:none https://github.com/mattwparas/helix.git /src/helix
 git -C /src/helix checkout "$HELIX_COMMIT"
 cd /src/helix
+sed -i 's/"wren", "gemini"/"wren", "gemini", "bovex"/' languages.toml
+grep -Fq 'except = [ "wren", "gemini", "bovex" ]' languages.toml
 export CARGO_BUILD_JOBS="$(nproc)"
 export CARGO_PROFILE_RELEASE_LTO=off
 export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=16
