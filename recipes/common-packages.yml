@@ -5,24 +5,31 @@ modules:
   - type: dnf
     repos:
       cleanup: true
+
       copr:
         - scottames/ghostty
         - jdxcode/mise
+
       files:
         - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
         - adoptium.repo
 
     install:
       packages:
-        # Desktop applications and integration
+        # --------------------------------------------------
+        # Desktop
+        # --------------------------------------------------
         - ghostty
         - emacs-pgtk
-        - thunar
+
+        # GUI file manager
+        - Thunar
         - thunar-archive-plugin
         - file-roller
-        - rofi-themes
 
-        # C/C++, Rust, Go, Python, JavaScript, Java, and .NET
+        # --------------------------------------------------
+        # C / C++
+        # --------------------------------------------------
         - gcc
         - gcc-c++
         - clang
@@ -32,37 +39,40 @@ modules:
         - cmake
         - ninja-build
         - pkgconf-pkg-config
-        - rust
-        - cargo
-        - rust-analyzer
-        - clippy
-        - golang
-        - python3
-        - python3-devel
-        - python-unversioned-command
-        - uv
-        - nodejs
-        - npm
-        - temurin-25-jdk
-        - dotnet-sdk-10.0
 
-        # Editors, shells, Git, and dotfile support
-        - neovim
         - tmux
+        - vifm
+
+        # --------------------------------------------------
+        # Git
+        # --------------------------------------------------
         - git
         - gh
         - glab
+        - git-delta
+
+        # --------------------------------------------------
+        # Data / text
+        # --------------------------------------------------
         - jq
         - yq
+        - sqlite
+
+        # --------------------------------------------------
+        # Shell productivity
+        # --------------------------------------------------
         - fzf
         - ripgrep
         - fd-find
         - eza
         - bat
         - zoxide
-        - git-delta
         - hyperfine
         - tree
+
+        # --------------------------------------------------
+        # General Unix tools
+        # --------------------------------------------------
         - rsync
         - zip
         - unzip
@@ -70,29 +80,62 @@ modules:
         - curl
         - less
         - file
+
+        # --------------------------------------------------
+        # Shell development
+        # --------------------------------------------------
         - ShellCheck
         - shfmt
+
+        # --------------------------------------------------
+        # System inspection / debugging
+        # --------------------------------------------------
         - btop
         - lsof
         - strace
-        - vifm
-        - stow
+        - bind-utils
+        - tcpdump
+        - nmap
+        - iperf3
+        - ethtool
+        - smartmontools
+        - nvme-cli
+
+        # --------------------------------------------------
+        # Project and user tool versions
+        # --------------------------------------------------
         - mise
 
-        # Containers and Fedora-packaged Kubernetes clients
+        # --------------------------------------------------
+        # Containers
+        # --------------------------------------------------
         - podman
         - podman-docker
         - container-selinux
         - distrobox
+
+        # --------------------------------------------------
+        # Kubernetes baseline tools
+        # --------------------------------------------------
         - helm3
         - kustomize
         - k9s
 
-        # Networking, remote access, backup, and secrets
+        # --------------------------------------------------
+        # Networking / remote access
+        # --------------------------------------------------
         - openssh-server
         - tailscale
+
+        # --------------------------------------------------
+        # Backup / secrets
+        # --------------------------------------------------
         - restic
         - age
+
+        # --------------------------------------------------
+        # SELinux / k3s
+        # --------------------------------------------------
         - policycoreutils
         - selinux-policy
         - selinux-policy-base

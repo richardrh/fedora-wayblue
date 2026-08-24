@@ -21,16 +21,19 @@ modules:
   - from-file: flatpaks.yml
   - from-file: fonts.yml
 
+  # Steel-enabled Helix built in a separate build stage.
   - type: copy
     from: steel-helix
     src: /out/
     dest: /usr/
 
+  # Fedora/Sway system defaults: scaling, theme, Waybar CSS, Rofi.
   - type: files
     files:
       - source: system
         destination: /
 
+  # Pinned tools that aren't sensible Fedora RPMs.
   - type: script
     scripts:
       - install-upstream-tools.sh
@@ -43,5 +46,10 @@ modules:
     user:
       enabled:
         - podman.socket
+
+  - type: chezmoi
+    repository: "https://github.com/richardrh/dotfiles"
+    all-users: true
+    file-conflict-policy: skip
 
   - type: signing

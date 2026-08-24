@@ -1,5 +1,5 @@
-# Optional per-project overrides. The image itself does not consume this file and
-# already provides baseline toolchains system-wide.
+# Example configuration for the separate dotfiles repository. The image itself
+# does not consume this file or install version-sensitive language runtimes.
 #
 # [tools]
 # node = "22"

@@ -34,22 +34,21 @@ cosign verify --key cosign.pub ghcr.io/richardrh/fedora-sway
 
 ## User state and dotfiles
 
-Personal configuration is intentionally not baked into the image. GNU Stow is installed for a separate dotfiles repository:
+Personal configuration and version-sensitive language runtimes are intentionally not baked into the image. The BlueBuild chezmoi module installs chezmoi and enables its initialization and update services globally for all users.
 
-```bash
-git clone git@github.com:richardrh/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-stow bash nvim doom ghostty helix git
-```
+On first login, the initialization service applies `https://github.com/richardrh/dotfiles` with the equivalent of `chezmoi init --apply`. Existing conflicting files are preserved. The repository must be publicly accessible for unattended initialization.
 
-Native PGTK Emacs is included. `bootstrap-doom-emacs` clones Doom into `~/.config/emacs` without touching `~/.config/doom`; run Doom's installer after stowing the user's Doom configuration.
+The dotfiles repository uses chezmoi source names such as `dot_bashrc`, `dot_gitconfig`, `dot_config/doom/`, `dot_config/ghostty/`, `dot_config/helix/`, and `dot_config/mise/`. `run_once_after_10-mise-install.sh` and `run_once_after_20-doom-install.sh` install mise tools and initialize Doom after files are applied.
 
-`mise` is installed only for repository-local version overrides. Baseline languages and commands are available without `mise install`.
+Native PGTK Emacs is included. `bootstrap-doom-emacs` clones Doom into `~/.config/emacs` without touching the chezmoi-managed `~/.config/doom`.
+
+Use `mise` from the dotfiles repository for Go, Rust, Python, Node, Java, and other version-sensitive developer tools.
 
 ## Runtime notes
 
 - `k3s` is pinned, runs as a native system service with its own containerd, and uses Rancher's SELinux policy package.
 - Podman remains independent. Its user socket is enabled; the `k3d` wrapper points Docker-API calls at that socket and never falls back to Docker Engine.
 - Steel Helix is built from Matthew Paras's pinned `steel-event-system` commit in an isolated BlueBuild stage. Only `hx`, `steel`, `forge`, `steel-language-server`, and the Helix runtime are copied into the final image.
+- Chezmoi initializes and updates each user's dotfiles through systemd user units; no separate image bootstrap script is used.
 - Tailscale is enabled but unconfigured. Each machine must run `sudo tailscale up` itself.
 - Builds run on every push to `main`, on manual dispatch, and daily. The signing module remains last and uses the existing `SIGNING_SECRET`; no private key is stored here.
