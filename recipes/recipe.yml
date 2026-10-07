@@ -47,6 +47,7 @@ modules:
     system:
       enabled:
         - tailscaled.service
+        - sshd.service
         - k3s.service
     user:
       enabled:
