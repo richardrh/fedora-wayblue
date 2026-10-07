@@ -17,10 +17,14 @@ modules:
     install:
       packages:
         # --------------------------------------------------
-        # Desktop
+        # Login / desktop policy
         # --------------------------------------------------
+        - dconf
         - ghostty
         - emacs-pgtk
+
+        # Reliable terminal editor fallback.
+        - vim-enhanced
 
         # GUI file manager
         - Thunar
@@ -39,6 +43,8 @@ modules:
         - cmake
         - ninja-build
         - pkgconf-pkg-config
+        - openssl
+        - openssl-devel
 
         - tmux
         - vifm
@@ -124,6 +130,7 @@ modules:
         # --------------------------------------------------
         # Networking / remote access
         # --------------------------------------------------
+        - openssh-clients
         - openssh-server
         - tailscale
 

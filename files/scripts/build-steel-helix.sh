@@ -51,7 +51,7 @@ export CARGO_BUILD_JOBS="$(nproc)"
 export CARGO_PROFILE_RELEASE_LTO=off
 export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=16
 export CARGO_INCREMENTAL=0
-cargo run --release --package xtask -- codegen
+cargo run --release --package xtask -- code-gen
 cargo build --release --package helix-term --features steel,git --locked
 
 install -d /out/bin /out/lib64/helix
