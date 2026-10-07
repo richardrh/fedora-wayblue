@@ -52,6 +52,7 @@ modules:
     user:
       enabled:
         - podman.socket
+        - workstation-setup.service
 
   - type: chezmoi
     repository: "https://github.com/richardrh/dotfiles"
