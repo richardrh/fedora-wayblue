@@ -33,6 +33,11 @@ modules:
       - source: system
         destination: /
 
+  # Compile the GDM system dconf database after the image files are layered.
+  - type: script
+    scripts:
+      - update-dconf.sh
+
   # Pinned tools that aren't sensible Fedora RPMs.
   - type: script
     scripts:

@@ -17,8 +17,9 @@ modules:
     install:
       packages:
         # --------------------------------------------------
-        # Desktop
+        # Login / desktop policy
         # --------------------------------------------------
+        - dconf
         - ghostty
         - emacs-pgtk
 
