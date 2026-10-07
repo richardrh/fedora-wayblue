@@ -23,6 +23,9 @@ modules:
         - ghostty
         - emacs-pgtk
 
+        # Reliable terminal editor fallback.
+        - vim-enhanced
+
         # GUI file manager
         - Thunar
         - thunar-archive-plugin
