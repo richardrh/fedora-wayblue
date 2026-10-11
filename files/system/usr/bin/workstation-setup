@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ssh_dir="$HOME/.ssh"
+key_file="$ssh_dir/id_ed25519"
+public_key="$key_file.pub"
+setup_marker="${XDG_CONFIG_HOME:-$HOME/.config}/workstation-setup-complete"
+title="$(hostname -s)-$(date -u +%Y-%m-%d)"
+
+ask() {
+    local answer
+    read -r -p "$1 [Y/n] " answer
+    [[ -z "$answer" || "$answer" =~ ^[Yy]([Ee][Ss])?$ ]]
+}
+
+register_github_key() {
+    local key_blob
+    key_blob=$(awk '{print $1 " " $2}' "$public_key")
+    if ! gh auth status >/dev/null 2>&1 && ask "Authenticate GitHub with gh now?"; then
+        gh auth login --git-protocol ssh
+    fi
+    if gh auth status >/dev/null 2>&1 && ! gh ssh-key list 2>/dev/null | grep -Fq "$key_blob"; then
+        gh ssh-key add "$public_key" --title "$title" --type authentication
+    fi
+}
+
+register_gitlab_key() {
+    local key_blob
+    key_blob=$(awk '{print $1 " " $2}' "$public_key")
+    if ! glab auth status >/dev/null 2>&1 && ask "Authenticate GitLab with glab now?"; then
+        glab auth login --hostname gitlab.com --git-protocol ssh
+    fi
+    if glab auth status >/dev/null 2>&1 && ! glab ssh-key list 2>/dev/null | grep -Fq "$key_blob"; then
+        glab ssh-key add "$public_key" --title "$title" --usage-type auth
+    fi
+}
+
+printf 'Workstation setup: SSH, GitHub/GitLab CLI, and Tailscale\n\n'
+
+install -d -m 700 "$ssh_dir"
+if [[ ! -e "$key_file" ]]; then
+    if ask "Create a new Ed25519 SSH key at $key_file?"; then
+        ssh-keygen -t ed25519 -C "$USER@$title" -f "$key_file"
+    else
+        printf 'SSH key setup skipped.\n' >&2
+    fi
+fi
+
+if [[ -e "$key_file" ]]; then
+    if [[ ! -f "$public_key" ]]; then
+        ssh-keygen -y -f "$key_file" > "$public_key"
+    fi
+    chmod 600 "$key_file"
+    chmod 644 "$public_key"
+    printf '\nPublic key: %s\n' "$public_key"
+    cat "$public_key"
+    printf '\n'
+
+    command -v gh >/dev/null 2>&1 && register_github_key
+    command -v glab >/dev/null 2>&1 && register_gitlab_key
+else
+    printf 'No SSH key is available; GitHub/GitLab SSH registration skipped.\n' >&2
+fi
+
+if command -v tailscale >/dev/null 2>&1 && ! tailscale status >/dev/null 2>&1; then
+    if ask 'Authenticate and join the Tailscale network now?'; then
+        sudo tailscale up || printf 'Tailscale enrollment did not complete; run sudo tailscale up later.\n' >&2
+    else
+        printf 'Tailscale enrollment skipped; run sudo tailscale up later.\n'
+    fi
+elif command -v tailscale >/dev/null 2>&1; then
+    printf 'Tailscale is already connected.\n'
+fi
+
+install -d -m 700 "$(dirname "$setup_marker")"
+touch "$setup_marker"
+printf '\nSetup complete. You can rerun workstation-setup at any time.\n'

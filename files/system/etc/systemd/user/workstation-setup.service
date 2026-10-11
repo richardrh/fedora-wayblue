@@ -1,0 +1,11 @@
+[Unit]
+Description=Interactive Fedora workstation setup
+After=graphical-session.target chezmoi-init.service
+ConditionPathExists=!%h/.config/workstation-setup-complete
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ghostty --class=workstation-setup -e /usr/bin/workstation-setup
+
+[Install]
+WantedBy=default.target

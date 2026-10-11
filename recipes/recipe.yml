@@ -33,6 +33,11 @@ modules:
       - source: system
         destination: /
 
+  # Compile the GDM system dconf database after the image files are layered.
+  - type: script
+    scripts:
+      - update-dconf.sh
+
   # Pinned tools that aren't sensible Fedora RPMs.
   - type: script
     scripts:
@@ -42,10 +47,12 @@ modules:
     system:
       enabled:
         - tailscaled.service
+        - sshd.service
         - k3s.service
     user:
       enabled:
         - podman.socket
+        - workstation-setup.service
 
   - type: chezmoi
     repository: "https://github.com/richardrh/dotfiles"
