@@ -24,7 +24,7 @@ modules:
         - emacs-pgtk
 
         # Reliable terminal editor fallback.
-        - vim-enhanced
+        - vim-minimal
 
         # GUI file manager
         - Thunar
