@@ -17,19 +17,13 @@ modules:
     install:
       packages:
         # --------------------------------------------------
-        # Login / desktop policy
+        # Workstation applications
         # --------------------------------------------------
-        - dconf
         - ghostty
         - emacs-pgtk
 
         # Reliable terminal editor fallback.
         - vim-minimal
-
-        # GUI file manager
-        - Thunar
-        - thunar-archive-plugin
-        - file-roller
 
         # --------------------------------------------------
         # C / C++

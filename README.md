@@ -1,14 +1,42 @@
-# Fedora Sway Atomic developer workstation
+# Wayblue Sway developer workstation
 
 [![bluebuild](https://github.com/richardrh/fedora-wayblue/actions/workflows/build.yml/badge.svg)](https://github.com/richardrh/fedora-wayblue/actions/workflows/build.yml)
 
-A signed BlueBuild image based on Fedora 44 Sway Atomic. It retains Fedora's Sway, Waybar, Rofi, notification, and keybinding defaults while adding 2x output scaling, light Catppuccin Mocha styling, development toolchains, Podman/Kubernetes tooling, and workstation applications.
+A signed BlueBuild image based on [Wayblue Sway](https://github.com/wayblueorg/wayblue). The desktop inherits Wayblue's defaults as a whole, with only 2x output scaling added locally. Development toolchains, Podman/Kubernetes tooling, workstation applications, and dotfiles setup remain layered on top.
 
 Published image:
 
 ```text
 ghcr.io/richardrh/fedora-sway:latest
 ```
+
+## Desktop defaults
+
+- Base: `ghcr.io/wayblueorg/sway:latest`, using Wayblue's recommended SDDM variant.
+- Wayblue owns the Sway session, Waybar, Rofi, notifications, screen lock, and login-screen defaults. This repository does not overlay a separate desktop theme.
+- Application defaults come from Wayblue: Adwaita-dark, a dark color-scheme preference, and Papirus icons. Applications with their own themes, including personal editor and terminal configs, can differ.
+- The file manager and archive tools also come from Wayblue.
+- `files/system/etc/sway/config.d/99-display.conf` retains `output * scale 2` for the workstation's 4K display. This scales every Sway output; it does not configure the SDDM greeter.
+- Wayblue supports only `latest`, so the Fedora release follows upstream rather than staying pinned to Fedora 44. The published workstation image remains `ghcr.io/richardrh/fedora-sway:latest`.
+
+### Existing installations
+
+Once the new image is published, installations already tracking
+`ghcr.io/richardrh/fedora-sway:latest` need only `sudo rpm-ostree upgrade` and a
+reboot, not a different image URL.
+
+Rebasing or upgrading does not reset your home directory. Existing
+`~/.config/sway`, `~/.config/waybar`, `~/.config/rofi`, notification/lock configs,
+or saved application appearance preferences can override the new defaults.
+Back up and move aside any desktop overrides you no longer want before logging
+in again. The public dotfiles repository currently leaves these desktop configs
+to the image.
+
+OSTree also preserves locally modified `/etc` files. If old styling remains,
+compare `/etc/rofi.rasi`, `/etc/xdg/waybar`, and `/etc/sway/config.d` with the new
+deployment's `/usr/etc` defaults. The old `90-theme.conf` is no longer supplied;
+retain `99-display.conf` if you still want 2x scaling. Do not copy the old
+Catppuccin overrides back over Wayblue's defaults.
 
 ## Fresh install from USB
 
@@ -45,6 +73,8 @@ After the first boot:
      ostree-image-signed:docker://ghcr.io/richardrh/fedora-sway:latest
    sudo systemctl reboot
    ```
+
+   Keep both reboots: Wayblue provisions the SDDM user during the initial boot.
 
 4. Confirm the active deployment:
 
