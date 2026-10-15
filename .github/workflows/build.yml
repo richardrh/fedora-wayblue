@@ -14,18 +14,53 @@ concurrency:
 
 jobs:
   bluebuild:
-    name: Build Fedora Sway image
+    name: Build Dank Sway workstation image
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Select preview image tag
+        if: github.ref != 'refs/heads/main'
+        run: |
+          printf '\nalt-tags: ["dank"]\n' >> recipes/recipe.yml
       - name: Build and publish signed image
         uses: blue-build/github-action@v1.13
         with:
           recipe: recipe.yml
+          skip_checkout: true
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}
           maximize_build_space: true
           use_cache: true
+      - name: Exercise the built Sway and Dank desktop
+        env:
+          IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'dank' }}
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER}/fedora-sway:${IMAGE_TAG}"
+          cosign verify --key cosign.pub "$image"
+          docker pull "$image"
+          mkdir -p artifacts
+          chmod 0777 artifacts
+          docker run --rm --entrypoint /bin/bash \
+            --tmpfs /tmp:mode=1777 \
+            -v "$PWD/artifacts:/artifacts" \
+            -v "$PWD/.github/scripts/smoke-desktop.sh:/smoke-desktop.sh:ro" \
+            "$image" -euc '
+              useradd --create-home --uid 1000 smoke
+              mkdir -p /run/dbus
+              dbus-uuidgen --ensure=/etc/machine-id
+              dbus-daemon --system --fork
+              exec runuser -u smoke -- bash /smoke-desktop.sh
+            '
+      - name: Upload desktop screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dank-desktop-smoke
+          path: artifacts/
+          if-no-files-found: ignore

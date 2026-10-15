@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-list-v1.json
+
+# DankMaterialShell stable packages for Fedora 44.  The DMS COPR pulls
+# avengemedia/danklinux as its runtime dependency repository.
+modules:
+  - type: dnf
+    repos:
+      copr:
+        - avengemedia/dms
+        - avengemedia/danklinux
+
+    install:
+      packages:
+        # Stable DMS shell and the pinned Quickshell build it supports.
+        - dms
+        - quickshell
+
+        # DMS backend and launcher/search widgets.
+        - dgop
+        - danksearch
+
+        # Dynamic Material theming, audio visualizer, and sound feedback.
+        - matugen
+        - cava
+        - qt6-qtmultimedia
+
+        # Qt theming and DMS icon font.
+        - qt6ct
+        - material-symbols-fonts
+
+        # Required desktop integration (also declared by dms).
+        - accountsservice
+        - cups-pk-helper

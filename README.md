@@ -1,14 +1,78 @@
-# Fedora Sway Atomic developer workstation
+# Dank Sway developer workstation
 
 [![bluebuild](https://github.com/richardrh/fedora-wayblue/actions/workflows/build.yml/badge.svg)](https://github.com/richardrh/fedora-wayblue/actions/workflows/build.yml)
 
-A signed BlueBuild image based on Fedora 44 Sway Atomic. It retains Fedora's Sway, Waybar, Rofi, notification, and keybinding defaults while adding 2x output scaling, light Catppuccin Mocha styling, development toolchains, Podman/Kubernetes tooling, and workstation applications.
+A signed BlueBuild image combining [Wayblue Sway](https://github.com/wayblueorg/wayblue) with [DankMaterialShell](https://danklinux.com/). Dank provides the coordinated desktop shell; Sway retains its normal tiling workflow. Development toolchains, Podman/Kubernetes tooling, workstation applications, dotfiles setup, and 2x output scaling remain included.
 
 Published image:
 
 ```text
 ghcr.io/richardrh/fedora-sway:latest
 ```
+
+Manual builds from branches other than `main` publish a signed **`:dank` preview**,
+without replacing `:latest`. After a successful preview build, an installation
+already using this repository's signing policy can try it with:
+
+```bash
+sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/richardrh/fedora-sway:dank
+sudo systemctl reboot
+```
+
+For a fresh Fedora installation, use `:dank` instead of `:latest` in both rebase
+steps below. To return to the previous deployment, use `sudo rpm-ostree rollback`
+and reboot.
+
+## Desktop defaults
+
+- Base: `ghcr.io/wayblueorg/sway:latest`, using Wayblue's recommended SDDM variant.
+- Dank owns the bar, launcher, settings panels, notifications, media/brightness OSDs, idle handling, and lock screen. Stable RPMs come from the upstream `avengemedia/dms` and `avengemedia/danklinux` COPRs.
+- Sway starts `/usr/bin/dank-session` once; do not also enable `dms.service`. Fedora's competing bar, media-key, and swayidle snippets are shadowed using its supported same-name config layering. Dunst/Mako D-Bus activation is removed and their packaged user services are masked.
+- Fresh users receive native Dank idle defaults: lock after five minutes and turn monitors off after six minutes on AC or battery. Existing `DankMaterialShell/settings.json` files and symlinks are preserved, so existing users keep their chosen idle policy.
+- Application defaults come from Wayblue: Adwaita-dark, a dark color-scheme preference, and Papirus icons. Applications with their own themes, including personal editor and terminal configs, can differ.
+- The file manager and archive tools also come from Wayblue.
+- The SDDM greeter and initial static wallpaper remain from Wayblue/Fedora. Pick a wallpaper and adjust the shell's palette in Dank settings; the greeter is separate from the desktop shell.
+- `files/system/etc/sway/config.d/99-display.conf` retains `output * scale 2` for the workstation's 4K display. This scales every Sway output; it does not configure the SDDM greeter.
+- Wayblue supports only `latest`, so the Fedora release follows upstream rather than staying pinned to Fedora 44. The published workstation image remains `ghcr.io/richardrh/fedora-sway:latest`.
+
+### Desktop shortcuts
+
+`Mod` is the Sway modifier (normally the Super/Windows key).
+
+| Shortcut | Action |
+| --- | --- |
+| `Mod+d` | Dank application launcher |
+| `Mod+comma` | Dank settings |
+| `Mod+n` | Notification center |
+| `Mod+Alt+l` | Lock screen |
+| Audio, microphone, media, brightness keys | Dank controls and OSDs |
+
+Sway's normal tiling bindings, including `Mod+space` and `Mod+v`, stay unchanged.
+
+### Existing installations
+
+The preview requires the explicit `:dank` rebase above. Once these changes are
+merged and successfully published from `main`, installations tracking
+`ghcr.io/richardrh/fedora-sway:latest` need only `sudo rpm-ostree upgrade` and a
+reboot.
+
+Rebasing or upgrading does not reset your home directory. Existing
+`~/.config/sway`, `~/.config/waybar`, `~/.config/rofi`, notification/lock configs,
+or saved application appearance preferences can override the new defaults.
+Back up and move aside any desktop overrides you no longer want before logging
+in again. The public dotfiles repository currently leaves these desktop configs
+to the image.
+
+If you previously enabled `dms.service` yourself, disable it before using the
+Sway autostart (`systemctl --user disable --now dms.service`), then log out and
+back in. Remove personal autostarts for Waybar, Dunst/Mako, or swayidle/swaylock
+if you want Dank to be their sole replacement.
+
+OSTree also preserves locally modified `/etc` files. If old components remain,
+compare `/etc/sway/config.d` with the deployment's `/usr/etc/sway/config.d`.
+In particular, the `90-bar.conf`, `90-swayidle.conf`, and media-key snippets
+must use this image's replacements. The old `90-theme.conf` is no longer
+supplied; retain `99-display.conf` if you still want 2x scaling.
 
 ## Fresh install from USB
 
@@ -45,6 +109,8 @@ After the first boot:
      ostree-image-signed:docker://ghcr.io/richardrh/fedora-sway:latest
    sudo systemctl reboot
    ```
+
+   Keep both reboots: Wayblue provisions the SDDM user during the initial boot.
 
 4. Confirm the active deployment:
 
@@ -104,7 +170,8 @@ Use `mise` from the dotfiles repository for Go, Rust, Python, Node, Java, and ot
 
 - `k3s` is pinned, runs as a native system service with its own containerd, and uses Rancher's SELinux policy package.
 - Podman remains independent. Its user socket is enabled; the `k3d` wrapper points Docker-API calls at that socket and never falls back to Docker Engine.
-- Steel Helix is built from the pinned `steel-event-system` commit compatible with Steel 0.8.2. Checksum-pinned Steel, Forge, and language-server release binaries avoid rebuilding those tools; only `hx` is compiled in the isolated BlueBuild stage.
+- Steel Helix is built from the pinned `steel-event-system` commit compatible with Steel 0.8.2, using its `code-gen` task. Checksum-pinned Steel, Forge, and language-server release binaries avoid rebuilding those tools; `hx` and its generation task are compiled in the isolated BlueBuild stage.
 - Chezmoi initializes and updates each user's dotfiles through systemd user units; the first graphical login opens `workstation-setup` for interactive SSH, GitHub/GitLab, and Tailscale setup.
 - Tailscale starts automatically; `workstation-setup` runs `sudo tailscale up` interactively because tailnet enrollment requires user authentication.
 - Builds run on every push to `main`, on manual dispatch, and daily. The signing module remains last and uses the existing `SIGNING_SECRET`; no private key is stored here.
+- CI verifies the published image signature, starts its actual Sway configuration headlessly, exercises Dank launcher/settings/notification/lock interfaces, checks for competing shell processes, and uploads screenshots/logs as `dank-desktop-smoke`. This does not replace a boot test for SDDM, hardware, or suspend/resume.
