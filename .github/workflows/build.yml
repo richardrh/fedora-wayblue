@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   bluebuild:
-    name: Build Dank Sway workstation image
+    name: Build Noctalia Sway workstation image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -27,7 +27,7 @@ jobs:
       - name: Select preview image tag
         if: github.ref != 'refs/heads/main'
         run: |
-          printf '\nalt-tags: ["dank"]\n' >> recipes/recipe.yml
+          printf '\nalt-tags: ["noctalia"]\n' >> recipes/recipe.yml
       - name: Build and publish signed image
         uses: blue-build/github-action@v1.13
         with:
@@ -41,9 +41,9 @@ jobs:
           squash: true
           use_cache: false
           verify_install: true
-      - name: Exercise the built Sway and Dank desktop
+      - name: Exercise the built Sway and Noctalia desktop
         env:
-          IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'dank' }}
+          IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'noctalia' }}
         run: |
           image="ghcr.io/${GITHUB_REPOSITORY_OWNER}/fedora-sway:${IMAGE_TAG}"
           cosign verify --key cosign.pub "$image"
@@ -65,6 +65,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dank-desktop-smoke
+          name: noctalia-desktop-smoke
           path: artifacts/
           if-no-files-found: ignore

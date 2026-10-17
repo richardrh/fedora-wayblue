@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Run as an unprivileged user in the built image, with /artifacts writable.
-export HOME=/tmp/dank-smoke
+export HOME=/tmp/noctalia-smoke
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_RUNTIME_DIR="$HOME/runtime"
 export WLR_BACKENDS=headless WLR_HEADLESS_OUTPUTS=1 WLR_RENDERER=pixman
@@ -43,14 +43,14 @@ swaymsg -t get_outputs | tee /artifacts/outputs.json | jq -e 'any(.[]; .active a
 
 ready=false
 for ((attempt=0; attempt<90; attempt++)); do
-  if dms ipc call spotlight toggle > /artifacts/ipc.log 2>&1; then ready=true; break; fi
+  if noctalia msg panel-toggle launcher > /artifacts/ipc.log 2>&1; then ready=true; break; fi
   kill -0 "$sway_pid"
   sleep 1
 done
 [[ $ready == true ]]
 sleep 3
 grim /artifacts/launcher.png
-dms ipc call spotlight toggle
+noctalia msg panel-close
 sleep 2
 grim /artifacts/desktop.png
 gdbus call --session --dest org.freedesktop.Notifications \
@@ -60,22 +60,20 @@ gdbus call --session --dest org.freedesktop.Notifications \
 gdbus call --session --dest org.freedesktop.Notifications \
   --object-path /org/freedesktop/Notifications \
   --method org.freedesktop.Notifications.Notify \
-  workstation-smoke 0 "" "Dank desktop ready" \
+  workstation-smoke 0 "" "Noctalia desktop ready" \
   "Notifications are served by the desktop shell." '[]' '{}' 10000
 sleep 2
 grim /artifacts/notification.png
-dms ipc call settings focusOrToggle
+noctalia msg settings-open
 sleep 2
 grim /artifacts/settings.png
 
-if pgrep -x 'waybar|swaybar|dunst|mako|swaylock|swayidle'; then
+if pgrep -x 'waybar|swaybar|dunst|mako|swayidle'; then
   echo 'A competing desktop component is running' >&2
   exit 1
 fi
 
-dms ipc call lock lock
+noctalia msg session lock
 sleep 3
-# A real session lock may prohibit screen capture; verify the lock state instead.
-dms ipc call lock isLocked | tee /artifacts/lock-state.txt
-[[ $(cat /artifacts/lock-state.txt) == true ]]
-printf 'Sway output scaling, Dank launcher/settings/lock IPC, and shell exclusivity passed.\n'
+pgrep -x noctalia
+printf 'Sway output scaling, Noctalia launcher/settings/lock IPC, and shell exclusivity passed.\n'

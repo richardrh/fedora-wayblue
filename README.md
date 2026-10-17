@@ -1,8 +1,8 @@
-# Dank Sway developer workstation
+# Noctalia Sway developer workstation
 
 [![bluebuild](https://github.com/richardrh/fedora-wayblue/actions/workflows/build.yml/badge.svg)](https://github.com/richardrh/fedora-wayblue/actions/workflows/build.yml)
 
-A signed BlueBuild image combining [Wayblue Sway](https://github.com/wayblueorg/wayblue) with [DankMaterialShell](https://danklinux.com/). Dank provides the coordinated desktop shell; Sway retains its normal tiling workflow. Development toolchains, Podman/Kubernetes tooling, workstation applications, dotfiles setup, and 2x output scaling remain included.
+A signed BlueBuild image combining [Wayblue Sway](https://github.com/wayblueorg/wayblue) with [Noctalia](https://noctalia.dev/). Noctalia provides the coordinated desktop shell; Sway retains its normal tiling workflow. Development toolchains, Podman/Kubernetes tooling, workstation applications, dotfiles setup, and 2x output scaling remain included.
 
 Published image:
 
@@ -10,29 +10,28 @@ Published image:
 ghcr.io/richardrh/fedora-sway:latest
 ```
 
-Manual builds from branches other than `main` publish a signed **`:dank` preview**,
+Manual builds from branches other than `main` publish a signed **`:noctalia` preview**,
 without replacing `:latest`. After a successful preview build, an installation
 already using this repository's signing policy can try it with:
 
 ```bash
-sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/richardrh/fedora-sway:dank
+sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/richardrh/fedora-sway:noctalia
 sudo systemctl reboot
 ```
 
-For a fresh Fedora installation, use `:dank` instead of `:latest` in both rebase
+For a fresh Fedora installation, use `:noctalia` instead of `:latest` in both rebase
 steps below. To return to the previous deployment, use `sudo rpm-ostree rollback`
 and reboot.
 
 ## Desktop defaults
 
-- Base: `ghcr.io/wayblueorg/sway:latest`, using Wayblue's recommended SDDM variant.
-- Dank owns the bar, launcher, settings panels, notifications, media/brightness OSDs, idle handling, and lock screen. Stable RPMs come from the upstream `avengemedia/dms` and `avengemedia/danklinux` COPRs.
-- Sway starts `/usr/bin/dank-session` once; do not also enable `dms.service`. Fedora's competing bar, media-key, and swayidle snippets are shadowed using its supported same-name config layering. Dunst/Mako D-Bus activation is removed and their packaged user services are masked.
-- Fresh users receive native Dank idle defaults: lock after five minutes and turn monitors off after six minutes on AC or battery. Existing `DankMaterialShell/settings.json` files and symlinks are preserved, so existing users keep their chosen idle policy.
+- Base: `ghcr.io/wayblueorg/sway:latest`.
+- Noctalia owns the bar, launcher, settings panels, notifications, media/brightness OSDs, idle handling, lock screen and wallpaper. The `noctalia` RPM comes from Fedora.
+- Sway starts `noctalia` once from `95-noctalia.conf`. Fedora's competing bar, media-key, and swayidle snippets are shadowed using its supported same-name config layering. Dunst/Mako D-Bus activation is removed and their packaged user services are masked.
 - Application defaults come from Wayblue: Adwaita-dark, a dark color-scheme preference, and Papirus icons. Applications with their own themes, including personal editor and terminal configs, can differ.
 - The file manager and archive tools also come from Wayblue.
-- The SDDM greeter and initial static wallpaper remain from Wayblue/Fedora. Pick a wallpaper and adjust the shell's palette in Dank settings; the greeter is separate from the desktop shell.
-- `files/system/etc/sway/config.d/99-display.conf` retains `output * scale 2` for the workstation's 4K display. This scales every Sway output; it does not configure the SDDM greeter.
+- Login uses greetd with [Noctalia Greeter](https://github.com/noctalia-dev/noctalia-greeter) (from the Terra repo, restricted to that one package); SDDM is disabled. After first login, run **Settings → Security → Noctalia Greeter → Sync Now** in Noctalia to copy wallpaper, palette and monitor layout to the login screen. Boot-testing the greeter on real hardware is not covered by CI.
+- `files/system/etc/sway/config.d/99-display.conf` retains `output * scale 2` for the workstation's 4K display. This scales every Sway output; it does not configure the login greeter (use Sync Now).
 - Wayblue supports only `latest`. Its current image is built from Fedora Sway Atomic 44, so this image is already on Fedora 44. Keep Wayblue as the base rather than duplicating its Sway/SDDM integration directly on Fedora; `latest` will move to Fedora 45 only after Wayblue does.
 
 ### Desktop shortcuts
@@ -41,17 +40,16 @@ and reboot.
 
 | Shortcut | Action |
 | --- | --- |
-| `Mod+d` | Dank application launcher |
-| `Mod+comma` | Dank settings |
-| `Mod+n` | Notification center |
+| `Mod+d` | Noctalia application launcher |
+| `Mod+comma` | Noctalia settings |
 | `Mod+Alt+l` | Lock screen |
-| Audio, microphone, media, brightness keys | Dank controls and OSDs |
+| Audio, microphone, media, brightness keys | Noctalia controls and OSDs |
 
 Sway's normal tiling bindings, including `Mod+space` and `Mod+v`, stay unchanged.
 
 ### Existing installations
 
-The preview requires the explicit `:dank` rebase above. Once these changes are
+The preview requires the explicit `:noctalia` rebase above. Once these changes are
 merged and successfully published from `main`, installations tracking
 `ghcr.io/richardrh/fedora-sway:latest` need only `sudo rpm-ostree upgrade` and a
 reboot.
@@ -63,10 +61,9 @@ Back up and move aside any desktop overrides you no longer want before logging
 in again. The public dotfiles repository currently leaves these desktop configs
 to the image.
 
-If you previously enabled `dms.service` yourself, disable it before using the
-Sway autostart (`systemctl --user disable --now dms.service`), then log out and
-back in. Remove personal autostarts for Waybar, Dunst/Mako, or swayidle/swaylock
-if you want Dank to be their sole replacement.
+Remove personal autostarts for Waybar, Dunst/Mako, or swayidle/swaylock if you
+want Noctalia to be their sole replacement. If you layered `noctalia` with
+`rpm-ostree install`, run `rpm-ostree uninstall noctalia` after upgrading.
 
 OSTree also preserves locally modified `/etc` files. If old components remain,
 compare `/etc/sway/config.d` with the deployment's `/usr/etc/sway/config.d`.
@@ -185,4 +182,4 @@ Use `mise` from the dotfiles repository for Go, Rust, Python, Node, Java, and ot
 - Tailscale starts automatically; `workstation-setup` runs `sudo tailscale up` interactively because tailnet enrollment requires user authentication.
 - Builds run on every push to `main`, on manual dispatch, and daily. The signing module remains last and uses the existing `SIGNING_SECRET`; no private key is stored here.
 - The build fails before signing if the base is older than Fedora 44, the kernel is older than 7.1.13, or the `intel_cvs`, `intel_ipu7`, or `ov08x40` modules are absent. Chunked, squashed OCI output keeps the inherited Wayblue layer count below Docker's layer-depth limit; CI retries registry pushes and verifies installed packages.
-- CI verifies the published image signature, starts its actual Sway configuration headlessly, exercises Dank launcher/settings/notification/lock interfaces, checks for competing shell processes, and uploads screenshots/logs as `dank-desktop-smoke`. This does not replace a boot test for SDDM, hardware, or suspend/resume.
+- CI verifies the published image signature, starts its actual Sway configuration headlessly, exercises Noctalia launcher/settings/notification/lock interfaces, checks for competing shell processes, and uploads screenshots/logs as `noctalia-desktop-smoke`. This does not replace a boot test for greetd, hardware, or suspend/resume.
