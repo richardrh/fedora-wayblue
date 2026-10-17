@@ -1,0 +1,11 @@
+# Terra: community repo that carries noctalia-greeter (not in Fedora proper).
+# includepkgs keeps Terra from shadowing any other Fedora package.
+[terra]
+name=Terra $releasever
+baseurl=https://repos.fyralabs.com/terra$releasever
+metadata_expire=6h
+enabled=1
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=https://repos.fyralabs.com/terra$releasever/key.asc
+includepkgs=noctalia-greeter
