@@ -45,6 +45,11 @@ modules:
     scripts:
       - install-upstream-tools.sh
 
+  # Refuse to publish an image that regresses this workstation's IPU7 camera.
+  - type: script
+    scripts:
+      - verify-camera-support.sh
+
   - type: systemd
     system:
       enabled:

@@ -33,7 +33,7 @@ and reboot.
 - The file manager and archive tools also come from Wayblue.
 - The SDDM greeter and initial static wallpaper remain from Wayblue/Fedora. Pick a wallpaper and adjust the shell's palette in Dank settings; the greeter is separate from the desktop shell.
 - `files/system/etc/sway/config.d/99-display.conf` retains `output * scale 2` for the workstation's 4K display. This scales every Sway output; it does not configure the SDDM greeter.
-- Wayblue supports only `latest`, so the Fedora release follows upstream rather than staying pinned to Fedora 44. The published workstation image remains `ghcr.io/richardrh/fedora-sway:latest`.
+- Wayblue supports only `latest`. Its current image is built from Fedora Sway Atomic 44, so this image is already on Fedora 44. Keep Wayblue as the base rather than duplicating its Sway/SDDM integration directly on Fedora; `latest` will move to Fedora 45 only after Wayblue does.
 
 ### Desktop shortcuts
 
@@ -118,6 +118,16 @@ After the first boot:
    rpm-ostree status
    ```
 
+   On an XPS with an Intel IPU7 camera, also verify that the active deployment
+   contains Fedora's camera fix:
+
+   ```bash
+   rpm -q kernel-core
+   modinfo intel_cvs
+   ```
+
+   The kernel must be 7.1.13 or newer and `intel_cvs` must resolve.
+
 On the first graphical login, the image initializes the public
 [dotfiles repository](https://github.com/richardrh/dotfiles), installs the
 configuration and tools, then opens the interactive `workstation-setup`
@@ -174,4 +184,5 @@ Use `mise` from the dotfiles repository for Go, Rust, Python, Node, Java, and ot
 - Chezmoi initializes and updates each user's dotfiles through systemd user units; the first graphical login opens `workstation-setup` for interactive SSH, GitHub/GitLab, and Tailscale setup.
 - Tailscale starts automatically; `workstation-setup` runs `sudo tailscale up` interactively because tailnet enrollment requires user authentication.
 - Builds run on every push to `main`, on manual dispatch, and daily. The signing module remains last and uses the existing `SIGNING_SECRET`; no private key is stored here.
+- The build fails before signing if the base is older than Fedora 44, the kernel is older than 7.1.13, or the `intel_cvs`, `intel_ipu7`, or `ov08x40` modules are absent. Chunked, squashed OCI output keeps the inherited Wayblue layer count below Docker's layer-depth limit; CI retries registry pushes and verifies installed packages.
 - CI verifies the published image signature, starts its actual Sway configuration headlessly, exercises Dank launcher/settings/notification/lock interfaces, checks for competing shell processes, and uploads screenshots/logs as `dank-desktop-smoke`. This does not replace a boot test for SDDM, hardware, or suspend/resume.
