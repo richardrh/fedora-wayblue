@@ -1,0 +1,9 @@
+[Unit]
+Description=IPU7 webcam as a PipeWire camera
+Requires=pipewire.service
+After=pipewire.service wireplumber.service
+
+[Service]
+ExecStart=/usr/bin/webcam-feeder
+Restart=on-failure
+RestartSec=2

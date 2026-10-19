@@ -125,6 +125,19 @@ After the first boot:
 
    The kernel must be 7.1.13 or newer and `intel_cvs` must resolve.
 
+   The camera is published by a user service, not WirePlumber's libcamera
+   monitor. Start it before a call and stop it afterwards (the privacy LED is
+   on while it runs):
+
+   ```bash
+   systemctl --user start webcam
+   systemctl --user stop webcam
+   ```
+
+   Applications see a PipeWire camera named "Built-in Camera". Chromium needs
+   `--enable-features=WebRtcPipeWireCamera`, which the dotfiles set for the
+   Chromium Flatpak. V4L2-only applications cannot use it.
+
 On the first graphical login, the image initializes the public
 [dotfiles repository](https://github.com/richardrh/dotfiles), installs the
 configuration and tools, then opens the interactive `workstation-setup`
@@ -182,4 +195,5 @@ Use `mise` from the dotfiles repository for Go, Rust, Python, Node, Java, and ot
 - Tailscale starts automatically; `workstation-setup` runs `sudo tailscale up` interactively because tailnet enrollment requires user authentication.
 - Builds run on every push to `main`, on manual dispatch, and daily. The signing module remains last and uses the existing `SIGNING_SECRET`; no private key is stored here.
 - The build fails before signing if the base is older than Fedora 44, the kernel is older than 7.1.13, or the `intel_cvs`, `intel_ipu7`, or `ov08x40` modules are absent. The inherited Wayblue image has 129 layers, above Docker's 125-layer limit, so the CI smoke test uses Podman rather than Docker.
+- IPU7 webcam: the OV08X40's binned 1928x1088 mode delivers corrupt frames, and libcamera's software ISP aborts WirePlumber on them ([rhbz#2402746](https://bugzilla.redhat.com/show_bug.cgi?id=2402746)). WirePlumber's libcamera monitor and the raw `ipu7` V4L2 nodes are therefore disabled (`/usr/share/wireplumber/wireplumber.conf.d/50-ipu7-camera.conf`), and `webcam-feeder` captures only the full-resolution mode, scales it to 1280x720, rotates it 180°, and provides it as YUY2 through `pipewiresink`. YUY2 is required because Chromium's PipeWire capture crashes on planar I420/NV12 from `pipewiresink`; `use-bufferpool=false` is required for a second consumer to receive frames after the first disconnects.
 - CI verifies the published image signature, starts its actual Sway configuration headlessly, exercises Noctalia launcher/settings/notification/lock interfaces, checks for competing shell processes, and uploads screenshots/logs as `noctalia-desktop-smoke`. This does not replace a boot test for greetd, hardware, or suspend/resume.
