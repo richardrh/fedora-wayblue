@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-list-v1.json
+
+# Noctalia shell (Fedora) and its greetd login greeter (Terra).
+modules:
+  - type: dnf
+    repos:
+      files:
+        - terra.repo
+
+    install:
+      packages:
+        - noctalia
+        - noctalia-greeter
+        - greetd
+        - polkit
+        - accountsservice

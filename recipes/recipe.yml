@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 
 name: fedora-sway
-description: Wayblue Sway developer workstation with DankMaterialShell
+description: Wayblue Sway developer workstation with Noctalia
 
 base-image: ghcr.io/wayblueorg/sway
 # Wayblue supports only the latest tag.
@@ -18,7 +18,7 @@ stages:
 
 modules:
   - from-file: common-packages.yml
-  - from-file: dank.yml
+  - from-file: noctalia.yml
   - from-file: kubernetes.yml
   - from-file: flatpaks.yml
   - from-file: fonts.yml
@@ -29,16 +29,16 @@ modules:
     src: /out/
     dest: /usr/
 
-  # Dank desktop integration, display scaling, and workstation helpers.
+  # Noctalia desktop integration, greetd config, display scaling, and workstation helpers.
   - type: files
     files:
       - source: system
         destination: /
 
-  # DMS owns notification activation and starts only with the Sway session.
+  # Noctalia owns notification activation and starts only with the Sway session.
   - type: script
     scripts:
-      - configure-dank.sh
+      - configure-noctalia.sh
 
   # Pinned tools that aren't sensible Fedora RPMs.
   - type: script
@@ -56,6 +56,10 @@ modules:
         - tailscaled.service
         - sshd.service
         - k3s.service
+        # greetd + Noctalia Greeter replace SDDM as the display manager.
+        - greetd.service
+      disabled:
+        - sddm.service
     user:
       enabled:
         - podman.socket

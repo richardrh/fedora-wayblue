@@ -1,0 +1,23 @@
+#!/usr/bin/bash
+# Publishes the IPU7 OV08X40 webcam as a PipeWire camera node.
+#
+# The sensor's binned 1928x1088 mode delivers corrupt frames on IPU7, and
+# libcamera's software ISP aborts on them (rhbz#2402746). Capture only the
+# full-resolution mode, then scale and rotate for applications. The sensor is
+# mounted upside down on this laptop.
+#
+# YUY2: Chromium's PipeWire capture crashes on planar I420/NV12 from
+# pipewiresink. use-bufferpool=false: with the pool, consumers after the first
+# receive no frames.
+set -euo pipefail
+
+exec gst-launch-1.0 -e \
+  libcamerasrc \
+  ! video/x-raw,width=3840,height=2160 \
+  ! videoconvertscale \
+  ! video/x-raw,width=1280,height=720 \
+  ! videoflip method=rotate-180 \
+  ! videoconvert \
+  ! video/x-raw,format=YUY2 \
+  ! pipewiresink mode=provide use-bufferpool=false \
+  stream-properties='"props,media.class=Video/Source,media.role=Camera,node.name=ipu7-webcam,node.description=\"Built-in Camera\""'

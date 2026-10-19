@@ -25,6 +25,10 @@ modules:
         # Reliable terminal editor fallback.
         - vim-minimal
 
+        # IPU7 webcam feeder (webcam.service): libcamerasrc -> pipewiresink.
+        - libcamera-gstreamer
+        - pipewire-gstreamer
+
         # --------------------------------------------------
         # C / C++
         # --------------------------------------------------

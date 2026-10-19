@@ -26,6 +26,6 @@ for module_pattern in intel_cvs.ko\* intel-ipu7.ko\* ov08x40.ko\*; do
   fi
 done
 
-rpm -q kernel-core libcamera pipewire-plugin-libcamera
+rpm -q kernel-core libcamera libcamera-gstreamer pipewire-gstreamer
 printf 'Verified Fedora %s, kernel %s, and the IPU7 camera module set.\n' \
   "$fedora_release" "$kernel_version"
