@@ -186,6 +186,31 @@ Native PGTK Emacs is included. `bootstrap-doom-emacs` clones Doom into `~/.confi
 
 Use `mise` from the dotfiles repository for Go, Rust, Python, Node, Java, and other version-sensitive developer tools.
 
+## Native GUI development
+
+The image includes `gtk3-devel` and `webkit2gtk4.1-devel` alongside GCC and
+`pkgconf-pkg-config`. These provide the GTK3 and WebKitGTK 4.1 headers, libraries,
+and pkg-config metadata needed to compile native GUI applications, including
+Wails v2, without layering development RPMs onto each workstation.
+
+Check the installed development interfaces with:
+
+```bash
+pkg-config --modversion gtk+-3.0 webkit2gtk-4.1
+```
+
+Wails v2 projects must select the WebKitGTK 4.1 interface explicitly:
+
+```bash
+wails dev -tags webkit2_41
+wails build -tags webkit2_41
+```
+
+Pass the same tag through any project-specific build wrapper. Installing the
+packages alone does not change Wails' default WebKitGTK 4.0 selection; see the
+[Wails Linux dependency guidance](https://wails.io/docs/gettingstarted/installation/#platform-specific-dependencies).
+Go and the Wails CLI remain project/user-managed tools.
+
 ## Runtime notes
 
 - `k3s` is pinned, runs as a native system service with its own containerd, and uses Rancher's SELinux policy package.
